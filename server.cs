@@ -34,7 +34,29 @@ class UDPServer
                     return true; 
                 }
             }
+
+            
         }
 
         return false;
     }
+
+     static async Task StartServerAsync()
+    {
+        string serverName = "";
+        int serverPort = 1200;
+
+        IPAddress ipv4Address = IPAddress.Parse("192.168.0.23");
+        UdpClient serverS = new UdpClient(new IPEndPoint(ipv4Address, serverPort));
+        Console.WriteLine($"Serveri eshte startuar ne IP adresen: {ipv4Address}, portin: {serverPort}");
+
+
+        List<IPEndPoint> clients = new List<IPEndPoint>();
+        int maxClients = 5;
+
+        while (clients.Count < maxClients)
+        {
+            UdpReceiveResult receiveResult = await serverS.ReceiveAsync();
+            IPEndPoint clientAddress = receiveResult.RemoteEndPoint;
+            byte[] data = receiveResult.Buffer;
+
