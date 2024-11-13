@@ -60,3 +60,31 @@ class UDPServer
             IPEndPoint clientAddress = receiveResult.RemoteEndPoint;
             byte[] data = receiveResult.Buffer;
 
+                   if (!clients.Contains(clientAddress))
+            {
+                clients.Add(clientAddress);
+                Console.WriteLine($"Klienti {clients.Count} u lidh me {clientAddress.Address} ne portin {clientAddress.Port}");
+            }
+
+            string message = Encoding.UTF8.GetString(data);
+            if (message.StartsWith("CONNECT:"))
+            {
+                bool hasFullAccess = VerifyClientAccess(clientAddress, message);
+
+                if (hasFullAccess)
+                {
+                    Console.WriteLine($"Client {clientAddress.Address} has full access.");
+                    clientWithFullAccess = clientAddress;
+
+                    byte[] fullAccessMessage = Encoding.UTF8.GetBytes("FULL_ACCESS");
+                    await serverS.SendAsync(fullAccessMessage, fullAccessMessage.Length, clientAddress);
+                }
+                else
+                {
+                    Console.WriteLine($"Client {clientAddress.Address} does not have full access.");
+
+                    byte[] restrictedAccessMessage = Encoding.UTF8.GetBytes("RESTRICTED_ACCESS");
+                    await serverS.SendAsync(restrictedAccessMessage, restrictedAccessMessage.Length, clientAddress);
+             
+                    continue;
+                }
