@@ -10,7 +10,7 @@ class UDPClient
     static void Main()
     {
         string serverName = "10.11.66.151";
-        int serverPort = 1200;
+        int serverPort = 2222;
 
         IPEndPoint serverAddress = new IPEndPoint(IPAddress.Parse(serverName), serverPort);
         byte[] receivedData;
