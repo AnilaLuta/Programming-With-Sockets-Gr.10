@@ -85,13 +85,10 @@ class UDPClient
                             Console.Write("Enter your choice: ");
                             string choice = Console.ReadLine();
 
-                            // Handle client options based on the choice
-                            // (Note: You may need to adjust the logic based on your specific requirements.)
-
                             if (hasFullAccess)
                             {
 
-                                // Handle options for clients with full access
+                                
                                 if (choice == "1")
                                 {
                                     Console.Write("Enter a message to send to the server: ");
