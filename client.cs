@@ -73,155 +73,124 @@ class UDPClient
 
                     Console.Write("Enter your choice: ");
                     string choice = Console.ReadLine();
-                                
-                                if (choice == "1")
-                                {
-                                    Console.Write("Enter a message to send to the server: ");
-                                    string message = Console.ReadLine();
 
-                                    byte[] data = Encoding.UTF8.GetBytes(message);
-                                    clientS.Send(data, data.Length, serverName, serverPort);
-                                }
-                                else if (choice == "2")
-                                {
-                                    Console.Write("Enter the file name (e.g., hello.txt): ");
-                                    string fileName = Console.ReadLine();
-                                    string filePath = Path.Combine(@"C:\Users\Admin\Desktop\Hello.txt", "hello.txt");
-
-                                    if (File.Exists(filePath))
-                                    {
-                                        string fileContent = File.ReadAllText(filePath);
-                                        byte[] data = Encoding.UTF8.GetBytes(fileContent);
-                                        clientS.Send(data, data.Length, serverName, serverPort);
-                                    }
-                                    else
-                                    {
-                                        string errorFile = $"File '{fileName}' not found";
-                                        Console.WriteLine(errorFile);
-                                        byte[] data = Encoding.UTF8.GetBytes(errorFile);
-                                        clientS.Send(data, data.Length, serverName, serverPort);
-                                    }
-                                }
-
-
-                                else if (choice == "3")
-                                {
-                                    Console.Write("Enter the file name to write (e.g., newfile.txt): ");
-                                    string fileName = Console.ReadLine();
-                                    string filePath = Path.Combine(@"C:\Users\Admin\Desktop\Hello.txt\", fileName);
-
-                                    Console.Write("Enter the content for the file: ");
-                                    string fileContent = Console.ReadLine();
-
-                                    File.WriteAllText(filePath, fileContent);
-                                    byte[] data = Encoding.UTF8.GetBytes($"WRITE:{fileName}");
-                                    clientS.Send(data, data.Length, serverAddress);
-
-                                    receivedData = clientS.Receive(ref serverAddress);
-                                    string confirmationMessage = Encoding.UTF8.GetString(receivedData);
-
-                                    Console.WriteLine("Server response: " + confirmationMessage);
-                                }
-                                else if (choice == "4")
-                                {
-                                    Console.WriteLine("Choose a command to execute:");
-                                    Console.WriteLine("1. mkdr [directory_name]");
-                                    Console.WriteLine("2. ls");
-
-                                    Console.Write("Enter your choice (1 or 2): ");
-                                    string subChoice = Console.ReadLine();
-
-                                    string command = "";
-                                    if (subChoice == "1")
-                                    {
-                                        Console.Write("Enter the directory name to create: ");
-                                        string dirName = Console.ReadLine();
-                                        command = $"EXECUTE:mkdr {dirName}";
-                                    }
-                                    else if (subChoice == "2")
-                                    {
-                                        command = "EXECUTE:ls";
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid sub-choice. Please enter 1 or 2.");
-                                        continue; 
-                                    }
-
-                                    byte[] data = Encoding.UTF8.GetBytes(command);
-                                    clientS.Send(data, data.Length, serverAddress);
-
-                                    receivedData = clientS.Receive(ref serverAddress);
-                                    string response = Encoding.UTF8.GetString(receivedData);
-
-                                    Console.WriteLine("Server response: ");
-                                    Console.WriteLine(response);
-                                }
-                                else if (choice == "5")
-                                {
-                                    Console.WriteLine("Exiting the client.");
-                                    return;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.");
-                                }
-                            }
-                            else if (!hasFullAccess)
-                            {
-                                if (choice == "1")
-                                {
-                                    Console.Write("Enter a message to send to the server: ");
-                                    string message = Console.ReadLine();
-
-                                    byte[] data = Encoding.UTF8.GetBytes(message);
-                                    clientS.Send(data, data.Length, serverName, serverPort);
-                                }
-                                else if (choice == "2")
-                                {
-                                    Console.Write("Enter the file name (e.g., hello.txt): ");
-                                    string fileName = Console.ReadLine();
-                                    string filePath = Path.Combine(@"C:\Users\Admin\Desktop\Hello.txt\", fileName);
-
-                                    if (File.Exists(filePath))
-                                    {
-                                        string fileContent = File.ReadAllText(filePath);
-                                        byte[] data = Encoding.UTF8.GetBytes(fileContent);
-                                        clientS.Send(data, data.Length, serverName, serverPort);
-                                    }
-                                    else
-                                    {
-                                        string errorFile = $"File '{fileName}' not found";
-                                        Console.WriteLine(errorFile);
-                                        byte[] data = Encoding.UTF8.GetBytes(errorFile);
-                                        clientS.Send(data, data.Length, serverName, serverPort);
-                                    }
-                                }
-                                else if (choice == "3")
-                                {
-                                    Console.WriteLine("Exiting the client.");
-                                    return;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
-                                }
-                            }
-                            
-                            byte[] choiceData = Encoding.UTF8.GetBytes(choice);
-                            clientS.Send(choiceData, choiceData.Length, serverAddress);
+                    if (hasFullAccess)
+                    {
+                        if (choice == "1")
+                        {
+                            Console.Write("Enter a message to send to the server: ");
+                            string message = Console.ReadLine();
+                            byte[] data = Encoding.UTF8.GetBytes(message);
+                            clientS.Send(data, data.Length, serverName, serverPort);
+                        }
+                        else if (choice == "2")
+                        {
+                            Console.Write("Enter the file name (e.g., hello.txt): ");
+                            string fileName = Console.ReadLine();
+                            byte[] requestData = Encoding.UTF8.GetBytes($"READ:{fileName}");
+                            clientS.Send(requestData, requestData.Length, serverAddress);
 
                             receivedData = clientS.Receive(ref serverAddress);
-                            string modifiedMessage = Encoding.UTF8.GetString(receivedData);
+                            string serverResponse = Encoding.UTF8.GetString(receivedData);
+                            Console.WriteLine("Response from the server: " + serverResponse);
+                        }
+                        else if (choice == "3")
+                        {
+                            Console.Write("Enter the file name to write (e.g., newfile.txt): ");
+                            string fileName = Console.ReadLine();
 
-                            Console.WriteLine("Response from the server: " + modifiedMessage);
+                            Console.Write("Enter the content for the file: ");
+                            string fileContent = Console.ReadLine();
+
+                            string writeRequest = $"WRITE:{fileName}:{fileContent}";
+                            byte[] data = Encoding.UTF8.GetBytes(writeRequest);
+                            clientS.Send(data, data.Length, serverAddress);
+
+                            receivedData = clientS.Receive(ref serverAddress);
+                            string serverResponse = Encoding.UTF8.GetString(receivedData);
+                            Console.WriteLine("Response from the server: " + serverResponse);
+                        }
+                        else if (choice == "4")
+                        {
+                            Console.WriteLine("Choose a command to execute:");
+                            Console.WriteLine("1. mkdr [directory_name]");
+                            Console.WriteLine("2. ls");
+
+                            Console.Write("Enter your choice (1 or 2): ");
+                            string subChoice = Console.ReadLine();
+
+                            string command = "";
+                            if (subChoice == "1")
+                            {
+                                Console.Write("Enter the directory name to create: ");
+                                string dirName = Console.ReadLine();
+                                command = $"EXECUTE:mkdr {dirName}";
+                            }
+                            else if (subChoice == "2")
+                            {
+                                command = "EXECUTE:ls";
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid sub-choice. Please enter 1 or 2.");
+                                continue;
+                            }
+
+                            byte[] data = Encoding.UTF8.GetBytes(command);
+                            clientS.Send(data, data.Length, serverAddress);
+
+                            receivedData = clientS.Receive(ref serverAddress);
+                            string response = Encoding.UTF8.GetString(receivedData);
+
+                            Console.WriteLine("Server response: ");
+                            Console.WriteLine(response);
+                        }
+
+                        else if (choice == "5")
+                        {
+                            Console.WriteLine("Exiting the client.");
+                            return;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid choice. Please enter a number between 1 and 4.");
+                        }
+                    }
+                    else
+                    {
+                        if (choice == "1")
+                        {
+                            Console.Write("Enter a message to send to the server: ");
+                            string message = Console.ReadLine();
+                            byte[] data = Encoding.UTF8.GetBytes(message);
+                            clientS.Send(data, data.Length, serverName, serverPort);
+                        }
+                        else if (choice == "2")
+                        {
+                            Console.Write("Enter the file name (e.g., hello.txt): ");
+                            string fileName = Console.ReadLine();
+                            byte[] requestData = Encoding.UTF8.GetBytes($"READ:{fileName}");
+                            clientS.Send(requestData, requestData.Length, serverAddress);
+
+                            receivedData = clientS.Receive(ref serverAddress);
+                            string serverResponse = Encoding.UTF8.GetString(receivedData);
+                            Console.WriteLine("Response from the server: " + serverResponse);
+                        }
+                        else if (choice == "3")
+                        {
+                            Console.WriteLine("Exiting the client.");
+                            return;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error communicating with the server: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error communicating with the server: {ex.Message}");
             }
         }
     }
