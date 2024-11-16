@@ -149,76 +149,71 @@ class UDPServer
                     byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
                     await serverS.SendAsync(errorData, errorData.Length, clientAddress);
                 }
-            }
-                else if (message.StartsWith("EXECUTE:"))
+            } else if (message.StartsWith("EXECUTE:")) {
+                string command = message.Substring(8);
+                Console.WriteLine($"Received a request to execute command: {command}");
+
+                try
                 {
-                    string command = message.Substring(8);
-                    Console.WriteLine($"Received a request to execute command: {command}");
+                    string output = "";
 
-                    try
+                    if (command.StartsWith("mkdr"))
                     {
-                        string output = "";
+                        string dirName = command.Substring(5).Trim();
 
-                        if (command.StartsWith("mkdr"))
-                        {
-                            string dirName = command.Substring(5).Trim();
+                        Directory.CreateDirectory(dirName);
 
-                            Directory.CreateDirectory(dirName);
-
-                            output = $"Directory '{dirName}' created successfully.";
-                        }
-                        else if (command.StartsWith("ls"))
-                        {
-                            string[] files = Directory.GetFiles(@"C:\Users\Dell\Desktop\Rrjeta-projekti\Anila_Rrjeta");
-                            output = string.Join(Environment.NewLine, files);
-                        }
-                        else
-                        {
-                            ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", $"/c {command}")
-                            {
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
-                                UseShellExecute = false,
-                                CreateNoWindow = true
-                            };
-
-                            using (Process process = new Process() { StartInfo = psi })
-                            {
-                                process.Start();
-
-                                output = process.StandardOutput.ReadToEnd();
-                                string error = process.StandardError.ReadToEnd();
-
-                                if (!string.IsNullOrEmpty(error))
-                                    output += $"{Environment.NewLine}Error:{Environment.NewLine}{error}";
-                            }
-                        }
-
-                        string response = $"Output:{Environment.NewLine}{output}";
-                        byte[] responseData = Encoding.UTF8.GetBytes(response);
-                        await serverS.SendAsync(responseData, responseData.Length, clientAddress);
+                        output = $"Directory '{dirName}' created successfully.";
                     }
-                    catch (Exception ex)
+                    else if (command.StartsWith("ls"))
                     {
-                        Console.WriteLine($"Error executing command: {ex.Message}");
+                        string[] files = Directory.GetFiles(@"C:\Users\Dell\Desktop\Rrjeta_arditi\Server\Server");
+                        output = string.Join(Environment.NewLine, files);
                     }
-                }
+                    else
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", $"/c {command}")
+                        {
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                            WorkingDirectory = baseDirectory 
+                        };
 
-                else
-                {
-                    string messageK = message.ToUpper();
-                    Console.WriteLine($"Pergjigja nga serveri: {messageK}");
+                        using (Process process = new Process() { StartInfo = psi })
+                        {
+                            process.Start();
+                            output = process.StandardOutput.ReadToEnd();
+                            string error = process.StandardError.ReadToEnd();
+                            if (!string.IsNullOrEmpty(error))
+                                output += $"{Environment.NewLine}Error:{Environment.NewLine}{error}";
+                        }
+                    }
 
-                    byte[] responseData = Encoding.UTF8.GetBytes(messageK);
+                    string response = $"Output:{Environment.NewLine}{output}";
+                    byte[] responseData = Encoding.UTF8.GetBytes(response);
                     await serverS.SendAsync(responseData, responseData.Length, clientAddress);
                 }
+                catch (Exception ex)
+                {
+                    string errorMessage = $"Error executing command: {ex.Message}";
+                    byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
+                    await serverS.SendAsync(errorData, errorData.Length, clientAddress);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Request from client {clients.Count}: {message}");
+                byte[] responseData = Encoding.UTF8.GetBytes(message); // Echo the message back
+                await serverS.SendAsync(responseData, responseData.Length, clientAddress);
             }
         }
 
-
+        // Notify all clients that the server is full
         foreach (var client in clients)
         {
-            string fullMessage = "Server: Lista e klientave eshte mbushur!";
+            string fullMessage = "Server: The client list is full!";
             byte[] fullMessageData = Encoding.UTF8.GetBytes(fullMessage);
             await serverS.SendAsync(fullMessageData, fullMessageData.Length, client);
         }
