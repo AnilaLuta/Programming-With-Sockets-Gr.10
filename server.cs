@@ -36,7 +36,6 @@ class UDPServer
                 }
             }
         }
-
         return false;
     }
 
@@ -48,7 +47,6 @@ class UDPServer
         IPAddress ipv4Address = IPAddress.Parse(serverName);
         UdpClient serverS = new UdpClient(new IPEndPoint(ipv4Address, serverPort));
         Console.WriteLine($"Server started at IP address: {ipv4Address}, port: {serverPort}");
-
 
         List<IPEndPoint> clients = new List<IPEndPoint>();
         int maxClients = 5;
@@ -87,87 +85,71 @@ class UDPServer
              
                     continue;
                 }
+            }
 
-                if (message.Equals("CONNECT:CLIENT"))
+            else if (message.StartsWith("WRITE:"))
+            {
+                try
                 {
-                    Console.WriteLine($"Client connected from {clientAddress.Address} on port {clientAddress.Port}");
-                }
-                else if (message.StartsWith("CONNECT:ADMIN"))
-                {
-                    string[] adminCredentials = message.Substring(13).Split(':');
-                    string adminUsername = adminCredentials[0];
-                    string adminPassword = adminCredentials[1];
-
-                    if (adminUsername == "admin" && adminPassword == "admin123")
+                    string[] parts = message.Substring(6).Split(new[] { ':' }, 2); // Ndarje në dy pjesë: fileName dhe fileContent
+                    if (parts.Length == 2)
                     {
-                        Console.WriteLine($"Admin connected from {clientAddress.Address} on port {clientAddress.Port}");
+                        string fileName = parts[0];
+                        string fileContent = parts[1];
+
+                        string filePath = Path.Combine(baseDirectory, fileName);
+                        File.WriteAllText(filePath, fileContent);
+                        Console.WriteLine($"File '{fileName}' successfully written to server.");
+
+                        byte[] response = Encoding.UTF8.GetBytes($"File '{fileName}' written successfully.");
+                        await serverS.SendAsync(response, response.Length, clientAddress);
                     }
                     else
                     {
-                        Console.WriteLine($"Invalid ADMIN credentials from {clientAddress.Address} on port {clientAddress.Port}");
+                        string errorMessage = "Invalid WRITE format. Use WRITE:<filename>:<content>";
+                        Console.WriteLine(errorMessage);
 
-                        byte[] invalidCredentialsMsg = Encoding.UTF8.GetBytes("Invalid credentials, accessing as a regular client");
-                        await serverS.SendAsync(invalidCredentialsMsg, invalidCredentialsMsg.Length, clientAddress);
-
-                        continue;
+                        byte[] errorResponse = Encoding.UTF8.GetBytes(errorMessage);
+                        await serverS.SendAsync(errorResponse, errorResponse.Length, clientAddress);
                     }
-
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Invalid connection request from {clientAddress.Address} on port {clientAddress.Port}");
-                    byte[] invalidConnectionMsg = Encoding.UTF8.GetBytes("Invalid connection request");
-                    await serverS.SendAsync(invalidConnectionMsg, invalidConnectionMsg.Length, clientAddress);
-                    continue;
+                    string errorMessage = $"Error writing file: {ex.Message}";
+                    Console.WriteLine(errorMessage);
+
+                    byte[] errorResponse = Encoding.UTF8.GetBytes(errorMessage);
+                    await serverS.SendAsync(errorResponse, errorResponse.Length, clientAddress);
                 }
             }
-
-            if (message.StartsWith("FILE:"))
+            else if (message.StartsWith("READ:"))
             {
-                string fileName = message.Substring(5); // Remove the "FILE:" prefix
-                Console.WriteLine($"Received file content from client {clients.Count} for file: {fileName}");
+                string fileName = message.Substring(5);
+                Console.WriteLine($"Received request to read file: {fileName}");
 
+                try
+                {
+                    string filePath = Path.Combine(baseDirectory, fileName);
+                    if (File.Exists(filePath))
+                    {
+                        string fileContent = File.ReadAllText(filePath);
+                        byte[] fileData = Encoding.UTF8.GetBytes(fileContent);
+                        await serverS.SendAsync(fileData, fileData.Length, clientAddress);
+                    }
+                    else
+                    {
+                        string errorMessage = $"File '{fileName}' not found";
+                        byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
+                        await serverS.SendAsync(errorData, errorData.Length, clientAddress);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string errorMessage = $"Error reading file: {ex.Message}";
+                    byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
+                    await serverS.SendAsync(errorData, errorData.Length, clientAddress);
+                }
             }
-            else
-            {
-                Console.WriteLine($"Kerkesa nga klienti {clients.Count}: {message}");
-                if (message.StartsWith("WRITE:"))
-                {
-                    string fileName = message.Substring(6); // Remove the "WRITE:" prefix
-                    Console.WriteLine($"Received a request to write content to file: {fileName}");
-
-                    
-                }
-
-                else if (message.StartsWith("OPEN:"))
-                {
-                    string fileName = message.Substring(5); 
-                    Console.WriteLine($"Received a request to open file: {fileName}");
-
-                    try
-                    {
-                        string filePath = Path.Combine(@"C:\Users\Dell\Desktop\Rrjeta-projekti\Anila_Rrjeta", fileName);
-
-                        if (File.Exists(filePath))
-                        {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = filePath,
-                                UseShellExecute = true
-                            });
-                            Console.WriteLine($"File '{fileName}' opened successfully.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"File '{fileName}' not found in the server folder.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error opening file: {ex.Message}");
-                    }
-                }
-
                 else if (message.StartsWith("EXECUTE:"))
                 {
                     string command = message.Substring(8);
