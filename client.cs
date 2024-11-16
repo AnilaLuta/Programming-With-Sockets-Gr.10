@@ -1,15 +1,13 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 class UDPClient
 {
-
     static void Main()
     {
-        string serverName = "10.11.66.151";
+        string serverName = "172.20.10.2";
         int serverPort = 2222;
 
         IPEndPoint serverAddress = new IPEndPoint(IPAddress.Parse(serverName), serverPort);
@@ -43,51 +41,38 @@ class UDPClient
             return;
         }
 
-        for (int i = 0; i < 5; i++)
+        using (UdpClient clientS = new UdpClient())
         {
-            using (UdpClient clientS = new UdpClient())
+            try
             {
-                try
+                byte[] connectionData = Encoding.UTF8.GetBytes(connectionMessage);
+                clientS.Send(connectionData, connectionData.Length, serverName, serverPort);
+
+                receivedData = clientS.Receive(ref serverAddress);
+                string connectionResponse = Encoding.UTF8.GetString(receivedData);
+                bool hasFullAccess = connectionResponse.Contains("FULL_ACCESS");
+
+                while (true)
                 {
-                    byte[] connectionData = Encoding.UTF8.GetBytes(connectionMessage);
-                    clientS.Send(connectionData, connectionData.Length, serverName, serverPort);
-
-                    while (true)
+                    if (hasFullAccess)
                     {
-                        receivedData = clientS.Receive(ref serverAddress);
-                        string connectionResponse = Encoding.UTF8.GetString(receivedData);
+                        Console.WriteLine("Choose an option:");
+                        Console.WriteLine("1. Enter a message");
+                        Console.WriteLine("2. Read a file");
+                        Console.WriteLine("3. Write to a file");
+                        Console.WriteLine("4.Execute commands");
+                        Console.WriteLine("5. Exit");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Choose an option:");
+                        Console.WriteLine("1. Enter a message");
+                        Console.WriteLine("2. Read a file");
+                        Console.WriteLine("3. Exit");
+                    }
 
-                       
-                        bool hasFullAccess = connectionResponse.Contains("FULL_ACCESS");
-
-
-                        while (true)
-                        {
-                            if (hasFullAccess)
-                            {
-
-                                Console.WriteLine("Choose an option:");
-                                Console.WriteLine("1. Enter a message");
-                                Console.WriteLine("2. Read a file");
-                                Console.WriteLine("3. Write to a file");
-                                Console.WriteLine("4. Execute a command");
-                                Console.WriteLine("5. Exit");
-                            }
-
-                            else if (!hasFullAccess)
-                            {
-                                Console.WriteLine("Choose an option:");
-                                Console.WriteLine("1. Enter a message");
-                                Console.WriteLine("2. Read a file");
-                                Console.WriteLine("3. Exit");
-                            }
-
-                            Console.Write("Enter your choice: ");
-                            string choice = Console.ReadLine();
-
-                            if (hasFullAccess)
-                            {
-
+                    Console.Write("Enter your choice: ");
+                    string choice = Console.ReadLine();
                                 
                                 if (choice == "1")
                                 {
