@@ -167,7 +167,7 @@ class UDPServer
                     }
                     else if (command.StartsWith("ls"))
                     {
-                        string[] files = Directory.GetFiles(@"C:\Users\Dell\Desktop\Rrjeta_arditi\Server\Server");
+                        string[] files = Directory.GetFiles(@"");
                         output = string.Join(Environment.NewLine, files);
                     }
                     else
