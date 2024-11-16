@@ -6,15 +6,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 class UDPServer
 {
     private static IPEndPoint clientWithFullAccess = null;
+     private static string baseDirectory = (@"");//Pathi se ku ruhet sedari
 
     static void Main()
     {
         Task.Run(async () => await StartServerAsync());
-
         Console.ReadLine();
     }
 
@@ -34,7 +35,6 @@ class UDPServer
                     return true; 
                 }
             }
- 
         }
 
         return false;
@@ -42,12 +42,12 @@ class UDPServer
 
      static async Task StartServerAsync()
     {
-        string serverName = "";
-        int serverPort = 2222;
+        string serverName = "";//IpAddress me te cilen jemi lidh ne rrjete 
+        int serverPort = 2222;//Porti
 
-        IPAddress ipv4Address = IPAddress.Parse("");
+        IPAddress ipv4Address = IPAddress.Parse(serverName);
         UdpClient serverS = new UdpClient(new IPEndPoint(ipv4Address, serverPort));
-        Console.WriteLine($"Serveri eshte startuar ne IP adresen: {ipv4Address}, portin: {serverPort}");
+        Console.WriteLine($"Server started at IP address: {ipv4Address}, port: {serverPort}");
 
 
         List<IPEndPoint> clients = new List<IPEndPoint>();
@@ -62,7 +62,7 @@ class UDPServer
                    if (!clients.Contains(clientAddress))
             {
                 clients.Add(clientAddress);
-                Console.WriteLine($"Klienti {clients.Count} u lidh me {clientAddress.Address} ne portin {clientAddress.Port}");
+                Console.WriteLine($"Client {clients.Count} connected from {clientAddress.Address}:{clientAddress.Port}");
             }
 
             string message = Encoding.UTF8.GetString(data);
@@ -72,7 +72,7 @@ class UDPServer
 
                 if (hasFullAccess)
                 {
-                    Console.WriteLine($"Client {clientAddress.Address} has full access.");
+                    Console.WriteLine($"Klienti {clientAddress.Address} has full access.");
                     clientWithFullAccess = clientAddress;
 
                     byte[] fullAccessMessage = Encoding.UTF8.GetBytes("FULL_ACCESS");
