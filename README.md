@@ -5,31 +5,31 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
 
 # Serveri
 # Funksionalitete:
-# 1.	Variablat e IP adresës dhe portit:
+ 1.	Variablat e IP adresës dhe portit:
   -	IP adresa reale dhe numri i portit të vendosen në kod.
-# 2.	Dëgjimi i kërkesave nga anëtarët e grupit:
+ 2.	Dëgjimi i kërkesave nga anëtarët e grupit:
   -	Serveri mund të dëgjojë të gjitha kërkesat nga anëtarët e grupit.
-# 3.	Pranimi i kërkesave nga pajisjet:
+ 3.	Pranimi i kërkesave nga pajisjet:
   -	Serveri pranon kërkesa nga klientët dhe i përpunon ato.
-# 4.	Leximi i mesazheve nga klientët:
+ 4.	Leximi i mesazheve nga klientët:
   -	Serveri lexon dhe përpunon mesazhet e dërguara nga klientët.
-# 5.	Qasje e plotë për një klient:
+ 5.	Qasje e plotë për një klient:
   -	Serveri mund të japë qasje të plotë për një klient për të menaxhuar fajllat dhe folderat.
 
 # Klienti
 # Funksionalitete:
-# 1.	Krijimi i socket lidhjes me serverin:
+ 1.	Krijimi i socket lidhjes me serverin:
   -	Klienti krijon një lidhje socket me serverin.
-# 2.	Privilegjet për pajisjet (klientët):
+ 2.	Privilegjet për pajisjet (klientët):
   -	Njëri nga klientët ka privilegje për të shkruar (write), lexuar (read) dhe ekzekutuar (execute) komanda.
   -	Klientët tjerë kanë vetëm privilegje leximi (read).
-# 3.	Lidhja me serverin:
+ 3.	Lidhja me serverin:
   -	Klienti lidhet me serverin duke përcaktuar portin dhe IP adresën e serverit.
-# 4.	Leximi i përgjigjeve nga serveri:
+ 4.	Leximi i përgjigjeve nga serveri:
   -	Klienti është në gjendje të lexojë përgjigjet që i kthehen nga serveri.
-# 5.	Dërgimi i mesazheve serverit:
+ 5.	Dërgimi i mesazheve serverit:
   -	Klienti dërgon mesazhe tek serveri në formë teksti.
-# 6.	Qasje e plotë në folderat dhe përmbajtjen e serverit:
+ 6.	Qasje e plotë në folderat dhe përmbajtjen e serverit:
   -	Klienti me privilegje të plota ka qasje për të lexuar, shkruar dhe ekzekutuar komanda në server.
 
 # Kërkesat për Projektin
@@ -62,12 +62,13 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
 
 # Struktura e Projektit
 ├── server.cs   # Kodi për serverin që menaxhon kërkesat e klientëve
+
 ├── client.cs   # Kodi për klientin që ndërvepron me serverin
+
 ├── README.md   # Dokumentimi i projektit
 
 # Klonimi i Projektit
 Klononi këtë depo duke përdorur komandën më poshtë:
-```bash
 git clone https://github.com/AnilaLuta/Programming-With-Sockets-Gr.10/
 
 Punoi:
