@@ -7,16 +7,19 @@ class UDPClient
 {
     static void Main()
     {
+        // Adresa IP e serverit dhe porti për lidhjen
         string serverName = "172.20.10.2";
         int serverPort = 2222;
 
         IPEndPoint serverAddress = new IPEndPoint(IPAddress.Parse(serverName), serverPort);
         byte[] receivedData;
-
+        
+        // Mundësitë për përdoruesin për të zgjedhur llojin e lidhjes
         Console.WriteLine("Choose the type of connection:");
         Console.WriteLine("1. Connect as CLIENT");
         Console.WriteLine("2. Connect as ADMIN");
-
+        
+        // Merr zgjedhjen e përdoruesit për llojin e lidhjes
         Console.Write("Enter your choice (1 or 2): ");
         string connectionChoice = Console.ReadLine();
 
@@ -27,12 +30,14 @@ class UDPClient
         }
         else if (connectionChoice == "2")
         {
+            // Përdoruesi mund të lidhët si admin
             Console.Write("Enter the ADMIN username: ");
             string username = Console.ReadLine();
 
             Console.Write("Enter the ADMIN password: ");
             string password = Console.ReadLine();
 
+            // Mesazh për lidhjen si admin me emër dhe fjalëkalim
             connectionMessage = $"CONNECT:ADMIN{username}:{password}";
         }
         else
@@ -41,6 +46,7 @@ class UDPClient
             return;
         }
 
+        // Krijimi i një instance të UDP klientit dhe dërgimi i mesazhit të lidhjes
         using (UdpClient clientS = new UdpClient())
         {
             try
@@ -52,6 +58,7 @@ class UDPClient
                 string connectionResponse = Encoding.UTF8.GetString(receivedData);
                 bool hasFullAccess = connectionResponse.Contains("FULL_ACCESS");
 
+                // Përsëritje e mundësive për klientin për të zgjedhur veprime
                 while (true)
                 {
                     if (hasFullAccess)
@@ -71,6 +78,7 @@ class UDPClient
                         Console.WriteLine("3. Exit");
                     }
 
+                    // Merr zgjedhjen e klientit
                     Console.Write("Enter your choice: ");
                     string choice = Console.ReadLine();
 
@@ -136,6 +144,7 @@ class UDPClient
                                 continue;
                             }
 
+                            // Dërgo komandën për ekzekutimin në server
                             byte[] data = Encoding.UTF8.GetBytes(command);
                             clientS.Send(data, data.Length, serverAddress);
 
@@ -158,6 +167,7 @@ class UDPClient
                     }
                     else
                     {
+                        // Trajtimi i zgjedhjeve për klientin pa qasje të plotë
                         if (choice == "1")
                         {
                             Console.Write("Enter a message to send to the server: ");
@@ -190,6 +200,7 @@ class UDPClient
             }
             catch (Exception ex)
             {
+                // Trajtimi i gabimeve gjatë komunikimit me serverin
                 Console.WriteLine($"Error communicating with the server: {ex.Message}");
             }
         }
