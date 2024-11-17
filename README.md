@@ -32,23 +32,6 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
  6.	Qasje e plotë në folderat dhe përmbajtjen e serverit:
   -	Klienti me privilegje të plota ka qasje për të lexuar, shkruar dhe ekzekutuar komanda në server.
 
-# Kërkesat për Projektin
-# 1.	Serveri:
-  -	Vendosja e variablave për numrin e portit dhe IP adresën reale.
-  -	Dëgjimi i kërkesave nga të gjithë anëtarët e grupit.
-  -	Pranimi i kërkesave nga pajisjet që dërgojnë kërkesa.
-  -	Leximi i mesazheve që dërgohen nga klientët.
-  -	Dhënia e qasjes së plotë të paktën njërit klient për qasje në folderat/përmbajtjen në file-t në server.
-# 2.	Klienti:
-  -	Krijimi i socket lidhjes me serverin.
-  -	Një nga klientët të ketë privilegjet për të shkruar (write), lexuar (read) dhe ekzekutuar (execute).
-  -	Klientët tjerë të kenë vetëm privilegje leximi (read).
-  -	Lidhja me serverin duke përcaktuar portin dhe IP adresën.
-  - Definimi i saktë i socket-it të serverit dhe lidhja të mos dështojë.
-  -	Leximi i përgjigjeve që i kthehen nga serveri.
-  -	Dërgimi i mesazheve serverit në formë teksti.
-  -	Qasje e plotë në folderat/përmbajtjen në server
-
 # Teknologjitë e Përdorura
  •	Protokolli: UDP (User Datagram Protocol)
  
