@@ -68,6 +68,7 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
 
 ├── README.md   # Dokumentimi i projektit
 
+
 # Klonimi i Projektit
 Klononi këtë depo duke përdorur komandën më poshtë:
 
@@ -75,14 +76,9 @@ git clone https://github.com/AnilaLuta/Programming-With-Sockets-Gr.10/
 
 Punoi:
 
-•	Emri: Anila Luta
-•	Emaili: anila.luta@student.uni-pr.edu
-
-•	Emri: Albiona Mustafa
-•	Emaili: albiona.mustafa2@student.uni-pr.edu
-
-•	Emri: Hare Luma
-•	Emaili: hare.luma@student.uni-pr.edu
+• Anila Luta
+• Albiona Mustafa
+• Hare Luma
 
 
 
