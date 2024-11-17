@@ -79,7 +79,7 @@ Punoi:
 •	Emaili: anila.luta@student.uni-pr.edu
 
 •	Emri: Albiona Mustafa
-•	Emaili: albiona.mustafa@student.uni-pr.edu
+•	Emaili: albiona.mustafa2@student.uni-pr.edu
 
 •	Emri: Hare Luma
 •	Emaili: hare.luma@student.uni-pr.edu
