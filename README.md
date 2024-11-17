@@ -51,6 +51,7 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
 
 # Teknologjitë e Përdorura
  •	Protokolli: UDP (User Datagram Protocol)
+ 
  •	Gjuha e Programimit: C#
 
 # Si të Ekzekutoni Projektin
@@ -69,9 +70,11 @@ Ky është një projekt për një sistem të thjeshtë komunikimi midis një ser
 
 # Klonimi i Projektit
 Klononi këtë depo duke përdorur komandën më poshtë:
+
 git clone https://github.com/AnilaLuta/Programming-With-Sockets-Gr.10/
 
 Punoi:
+
 •	Emri: Anila Luta
 •	Emaili: anila.luta@student.uni-pr.edu
 
