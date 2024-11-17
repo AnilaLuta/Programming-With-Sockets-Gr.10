@@ -8,7 +8,7 @@ class UDPClient
     static void Main()
     {
         // Adresa IP e serverit dhe porti për lidhjen
-        string serverName = "172.20.10.2";
+        string serverName = "192.168.0.27";
         int serverPort = 2222;
 
         IPEndPoint serverAddress = new IPEndPoint(IPAddress.Parse(serverName), serverPort);
