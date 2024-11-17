@@ -75,9 +75,10 @@ Klononi këtë depo duke përdorur komandën më poshtë:
 git clone https://github.com/AnilaLuta/Programming-With-Sockets-Gr.10/
 
 # Punoi
-
 • Anila Luta
+
 • Albiona Mustafa
+
 • Hare Luma
 
 
