@@ -60,7 +60,7 @@ class UDPClient
                         Console.WriteLine("1. Enter a message");
                         Console.WriteLine("2. Read a file");
                         Console.WriteLine("3. Write to a file");
-                        Console.WriteLine("4.Execute commands");
+                        Console.WriteLine("4. Execute commands");
                         Console.WriteLine("5. Exit");
                     }
                     else
