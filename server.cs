@@ -122,6 +122,7 @@ class UDPServer
                     await serverS.SendAsync(errorResponse, errorResponse.Length, clientAddress);
                 }
             }
+            
             else if (message.StartsWith("READ:"))
             {
                 string fileName = message.Substring(5);
@@ -149,7 +150,9 @@ class UDPServer
                     byte[] errorData = Encoding.UTF8.GetBytes(errorMessage);
                     await serverS.SendAsync(errorData, errorData.Length, clientAddress);
                 }
-            } else if (message.StartsWith("EXECUTE:")) {
+            } 
+            
+            else if (message.StartsWith("EXECUTE:")) {
                 string command = message.Substring(8);
                 Console.WriteLine($"Received a request to execute command: {command}");
 
@@ -205,12 +208,12 @@ class UDPServer
             else
             {
                 Console.WriteLine($"Request from client {clients.Count}: {message}");
-                byte[] responseData = Encoding.UTF8.GetBytes(message); // Echo the message back
+                byte[] responseData = Encoding.UTF8.GetBytes(message);
                 await serverS.SendAsync(responseData, responseData.Length, clientAddress);
             }
         }
 
-        // Notify all clients that the server is full
+  
         foreach (var client in clients)
         {
             string fullMessage = "Server: The client list is full!";
