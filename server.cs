@@ -10,26 +10,32 @@ using System.Diagnostics;
 
 class UDPServer
 {
+    // Ruhet klienti me qasje të plotë në server 
     private static IPEndPoint clientWithFullAccess = null;
-     private static string baseDirectory = (@"");//Pathi se ku ruhet sedari
+    // Drejtoria bazë për ruajtjen e skedarëve që krijohen ose lexohen
+    private static string baseDirectory = (@"C:\Users\Dell\Desktop\Server_Final\Server\Server\");
 
     static void Main()
     {
+        // Fillon serveri në një detyrë asinkrone dhe pret për hyrje nga përdoruesi
         Task.Run(async () => await StartServerAsync());
         Console.ReadLine();
     }
 
+    // Kontrollon nëse klienti ka qasje të plotë bazuar në kredencialet e dhëna
     private static bool VerifyClientAccess(IPEndPoint clientAddress, string authMessage)
     {
+        // Kontrollo nëse mesazhi përmban formatin e duhur për lidhjen me qasje të plotë
         if (authMessage.StartsWith("CONNECT:ADMIN"))
         {
+            // Merr emrin dhe fjalëkalimin nga mesazhi
             string[] adminCredentials = authMessage.Substring(13).Split(':');
-
             if (adminCredentials.Length == 2)
             {
                 string adminUsername = adminCredentials[0];
                 string adminPassword = adminCredentials[1];
 
+                // Verifikimi i kredencialeve
                 if (adminUsername == "admin" && adminPassword == "admin123")
                 {
                     return true; 
@@ -39,33 +45,42 @@ class UDPServer
         return false;
     }
 
+    // Funksioni kryesor që ekzekuton serverin UDP
      static async Task StartServerAsync()
     {
-        string serverName = "";//IpAddress me te cilen jemi lidh ne rrjete 
+         // IP dhe porta që serveri do të përdorë për të pritur klientët
+        string serverName = "192.168.0.27";//IP Addressa
         int serverPort = 2222;//Porti
 
         IPAddress ipv4Address = IPAddress.Parse(serverName);
         UdpClient serverS = new UdpClient(new IPEndPoint(ipv4Address, serverPort));
         Console.WriteLine($"Server started at IP address: {ipv4Address}, port: {serverPort}");
 
+         // Lista e klientëve të lidhur me serverin
         List<IPEndPoint> clients = new List<IPEndPoint>();
         int maxClients = 5;
 
         while (clients.Count < maxClients)
         {
+            // Pranon të dhënat nga një klient
             UdpReceiveResult receiveResult = await serverS.ReceiveAsync();
             IPEndPoint clientAddress = receiveResult.RemoteEndPoint;
             byte[] data = receiveResult.Buffer;
 
-                   if (!clients.Contains(clientAddress))
+            // Shto klientin nëse nuk është në listë
+            if (!clients.Contains(clientAddress))
             {
                 clients.Add(clientAddress);
                 Console.WriteLine($"Client {clients.Count} connected from {clientAddress.Address}:{clientAddress.Port}");
             }
 
+            // Përkthen mesazhin në tekst
             string message = Encoding.UTF8.GetString(data);
+
+            // Kontrollo mesazhet që fillojnë me "CONNECT:"
             if (message.StartsWith("CONNECT:"))
             {
+                // Verifikimi i qasjes së plotë
                 bool hasFullAccess = VerifyClientAccess(clientAddress, message);
 
                 if (hasFullAccess)
@@ -73,6 +88,7 @@ class UDPServer
                     Console.WriteLine($"Klienti {clientAddress.Address} has full access.");
                     clientWithFullAccess = clientAddress;
 
+                    // Dërgon mesazh për qasje të plotë te klienti
                     byte[] fullAccessMessage = Encoding.UTF8.GetBytes("FULL_ACCESS");
                     await serverS.SendAsync(fullAccessMessage, fullAccessMessage.Length, clientAddress);
                 }
@@ -87,6 +103,7 @@ class UDPServer
                 }
             }
 
+            // Procesimi i komandës "WRITE:"
             else if (message.StartsWith("WRITE:"))
             {
                 try
@@ -122,7 +139,8 @@ class UDPServer
                     await serverS.SendAsync(errorResponse, errorResponse.Length, clientAddress);
                 }
             }
-            
+
+            // Procesimi i komandës "READ:"
             else if (message.StartsWith("READ:"))
             {
                 string fileName = message.Substring(5);
@@ -151,8 +169,10 @@ class UDPServer
                     await serverS.SendAsync(errorData, errorData.Length, clientAddress);
                 }
             } 
-            
+
+            // Procesimi i komandës "EXECUTE:"
             else if (message.StartsWith("EXECUTE:")) {
+                // Komanda ekzekutohet dhe dërgohet rezultati tek klienti
                 string command = message.Substring(8);
                 Console.WriteLine($"Received a request to execute command: {command}");
 
@@ -160,6 +180,7 @@ class UDPServer
                 {
                     string output = "";
 
+                    // Komanda për të krijuar një direktor
                     if (command.StartsWith("mkdr"))
                     {
                         string dirName = command.Substring(5).Trim();
@@ -170,7 +191,8 @@ class UDPServer
                     }
                     else if (command.StartsWith("ls"))
                     {
-                        string[] files = Directory.GetFiles(@"");
+                        // Liston të gjitha skedarët në direktor
+                        string[] files = Directory.GetFiles(@"C:\Users\Dell\Desktop\Server_Final\Server\Server\");
                         output = string.Join(Environment.NewLine, files);
                     }
                     else
@@ -205,6 +227,7 @@ class UDPServer
                     await serverS.SendAsync(errorData, errorData.Length, clientAddress);
                 }
             }
+            // Përpunon çdo mesazh tjetër
             else
             {
                 Console.WriteLine($"Request from client {clients.Count}: {message}");
@@ -213,7 +236,7 @@ class UDPServer
             }
         }
 
-  
+         // Njofton të gjithë klientët që lista është mbushur
         foreach (var client in clients)
         {
             string fullMessage = "Server: The client list is full!";
